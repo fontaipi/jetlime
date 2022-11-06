@@ -41,7 +41,8 @@ fun MutableList<Item>.modify(index: Int): MutableList<Item> {
     if (item.id == index) {
       item.copy(
         activeState = true,
-        name = "${item.name} (Now watching)"
+        name = "${item.name} (Now watching)",
+        description = "New description"
       )
     } else item
   }.toMutableList()

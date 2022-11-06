@@ -28,6 +28,7 @@ class JetLimeItemsModel(list: List<JetLimeItem> = listOf()) {
     val jetLimeItemConfig: JetLimeItemConfig = JetLimeItemConfig(position = 0),
     var itemId: Int = 0,
     var visible: MutableTransitionState<Boolean> = MutableTransitionState(false),
+    val onIconClick: (() -> Unit)? = null,
     val content: @Composable () -> Unit = {}
   )
 

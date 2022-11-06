@@ -30,78 +30,80 @@ import kotlinx.coroutines.flow.collect
  * @param listState is the state of the LazyColumn which will hold the JetLimeItems.
  */
 @OptIn(
-  ExperimentalAnimationApi::class,
-  ExperimentalTransitionApi::class,
-  ExperimentalFoundationApi::class
+    ExperimentalAnimationApi::class,
+    ExperimentalTransitionApi::class,
+    ExperimentalFoundationApi::class
 )
 @ExperimentalAnimationApi
 @Composable
 fun JetLimeView(
-  modifier: Modifier = Modifier,
-  jetLimeItemsModel: JetLimeItemsModel,
-  jetLimeViewConfig: JetLimeViewConfig,
-  listState: LazyListState = rememberLazyListState()
+    modifier: Modifier = Modifier,
+    jetLimeItemsModel: JetLimeItemsModel,
+    jetLimeViewConfig: JetLimeViewConfig,
+    listState: LazyListState = rememberLazyListState()
 ) {
-  LaunchedEffect(jetLimeItemsModel) {
-    snapshotFlow {
-      jetLimeItemsModel.items.firstOrNull { jetLimeItem ->
-        jetLimeItem.visible.isIdle && jetLimeItem.visible.targetState.not()
-      }
-    }.collect { jetLimeItem ->
-      if (jetLimeItem != null) {
-        jetLimeItemsModel.pruneItems()
-      }
-    }
-  }
-  LazyColumn(
-    modifier = modifier,
-    state = listState,
-    verticalArrangement = Arrangement.spacedBy(jetLimeViewConfig.itemSpacing)
-  ) {
-    items(count = jetLimeItemsModel.items.size) { pos ->
-      jetLimeItemsModel.items[pos].let { jetLimeItem ->
-        val slideInVertically = slideInVertically(
-          initialOffsetY = { a -> -a / 4 },
-          animationSpec = tween(
-            durationMillis = 600,
-            delayMillis = 100,
-            easing = FastOutSlowInEasing
-          )
-        )
-        val shrinkVertically = shrinkVertically(
-          animationSpec = tween(
-            durationMillis = 400,
-            delayMillis = 100,
-            easing = LinearOutSlowInEasing
-          )
-        )
-
-        if (jetLimeViewConfig.enableItemAnimation) {
-          AnimatedVisibility(
-            visibleState = jetLimeItem.visible,
-            enter = slideInVertically,
-            exit = shrinkVertically
-          ) {
-            JetLimeItemView(
-              title = jetLimeItem.title,
-              description = jetLimeItem.description,
-              content = jetLimeItem.content,
-              itemConfig = jetLimeItem.jetLimeItemConfig.apply { position = pos },
-              viewConfig = jetLimeViewConfig,
-              totalItems = jetLimeItemsModel.items.size
-            )
-          }
-        } else {
-          JetLimeItemView(
-            title = jetLimeItem.title,
-            description = jetLimeItem.description,
-            content = jetLimeItem.content,
-            itemConfig = jetLimeItem.jetLimeItemConfig.apply { position = pos },
-            viewConfig = jetLimeViewConfig,
-            totalItems = jetLimeItemsModel.items.size
-          )
+    LaunchedEffect(jetLimeItemsModel) {
+        snapshotFlow {
+            jetLimeItemsModel.items.firstOrNull { jetLimeItem ->
+                jetLimeItem.visible.isIdle && jetLimeItem.visible.targetState.not()
+            }
+        }.collect { jetLimeItem ->
+            if (jetLimeItem != null) {
+                jetLimeItemsModel.pruneItems()
+            }
         }
-      }
     }
-  }
+    LazyColumn(
+        modifier = modifier,
+        state = listState,
+        verticalArrangement = Arrangement.spacedBy(jetLimeViewConfig.itemSpacing)
+    ) {
+        items(count = jetLimeItemsModel.items.size) { pos ->
+            jetLimeItemsModel.items[pos].let { jetLimeItem ->
+                val slideInVertically = slideInVertically(
+                    initialOffsetY = { a -> -a / 4 },
+                    animationSpec = tween(
+                        durationMillis = 600,
+                        delayMillis = 100,
+                        easing = FastOutSlowInEasing
+                    )
+                )
+                val shrinkVertically = shrinkVertically(
+                    animationSpec = tween(
+                        durationMillis = 400,
+                        delayMillis = 100,
+                        easing = LinearOutSlowInEasing
+                    )
+                )
+
+                if (jetLimeViewConfig.enableItemAnimation) {
+                    AnimatedVisibility(
+                        visibleState = jetLimeItem.visible,
+                        enter = slideInVertically,
+                        exit = shrinkVertically
+                    ) {
+                        JetLimeItemView(
+                            title = jetLimeItem.title,
+                            description = jetLimeItem.description,
+                            content = jetLimeItem.content,
+                            itemConfig = jetLimeItem.jetLimeItemConfig.apply { position = pos },
+                            viewConfig = jetLimeViewConfig,
+                            onIconClick = jetLimeItem.onIconClick,
+                            totalItems = jetLimeItemsModel.items.size
+                        )
+                    }
+                } else {
+                    JetLimeItemView(
+                        title = jetLimeItem.title,
+                        description = jetLimeItem.description,
+                        content = jetLimeItem.content,
+                        itemConfig = jetLimeItem.jetLimeItemConfig.apply { position = pos },
+                        viewConfig = jetLimeViewConfig,
+                        onIconClick = jetLimeItem.onIconClick,
+                        totalItems = jetLimeItemsModel.items.size
+                    )
+                }
+            }
+        }
+    }
 }

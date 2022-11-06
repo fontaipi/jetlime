@@ -49,7 +49,8 @@ fun ItemUpdateTimeLine() {
                     jetLimeItemConfig = JetLimeItemConfig(
                       position = item.id,
                       iconAnimation = if (item.activeState) IconAnimation() else null
-                    )
+                    ),
+                    onIconClick = {viewModel.updateItem(item.id)}
                   )
                 )
               }
